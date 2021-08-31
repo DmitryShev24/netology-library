@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const {Book: Books} = require("../models")
+const {Book} = require("../models")
 const fileMiddleware = require('../middleware/file')
 
 const stor = {
@@ -10,7 +10,7 @@ const stor = {
 let data = [1, 2, 3]
 
 data.map(el => {
-    const newBook = new Books(`book ${el}`, `desc book ${el}`);
+    const newBook = new Book(`book ${el}`, `desc book ${el}`);
     stor.book.push(newBook);
 });
 
@@ -50,7 +50,16 @@ router.get("/:id/download", (req, res) => {
     })
 })
 
+router.post('/', (req, res) => {
+    const {book} = stor
+    const {title, desc} = req.body
 
+    const newBook = new Book(title, desc)
+    book.push(newBook);
+
+    res.status(201)
+    res.json(newBook)
+});
 
 router.post('/upload-book', fileMiddleware.single('book'), (req, res) => {
     if (req.file) {

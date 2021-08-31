@@ -4,11 +4,10 @@ config.js
 .idea
 /.idea
 
-/.env
-.env
+
 /yarn-error.log
 
-yarn.loc  k
+yarn.lock
 package-lock.json
 
 node_modules/
