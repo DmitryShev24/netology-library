@@ -1,7 +1,6 @@
 const express = require("express")
 const router = express.Router()
 const {Book} = require("../models")
-const fileMiddleware = require('../middleware/file')
 
 const stor = {
     book: [],
@@ -14,43 +13,25 @@ data.map(el => {
     stor.book.push(newBook);
 });
 
-
-// router.post('/api/user/login', (req, res) => {
-//     res.status(201)
-//     res.json({
-//         id: 1, mail: "test@mail.ru"
-//     })
-// });
-
-router.get("/", (req, res) => {
-    console.log('test')
+router.get('/', (req, res) => {
     const {book} = stor
-    res.json(book)
-});
+    const {title, desc} = req.body
 
-
-router.get('/:id', (req, res) => {
-    const {book} = stor
-    const {id} = req.params
-    const idx = book.findIndex(el => el.id === id)
-
-    if (idx !== -1 ) {
-        res.json(book[idx])
-    } else {
-        res.status(404)
-        res.json("book | not found")
-    }
-});
-
-router.get("/:id/download", (req, res) => {
-    res.download(__dirname+"/../public/book/2021-29-08-file.pdf", "file.pdf", err => {
-        if (err){
-            res.status(404).json()
-        }
+    res.render("books/index", {
+        title: "Книги",
+        books: book
     })
-})
+});
 
-router.post('/', (req, res) => {
+router.get('/create', (req, res) => {
+        res.render('books/create', {
+            title: 'Создание книги',
+            book: {}
+        })
+    }
+)
+
+router.post('/create', (req, res) => {
     const {book} = stor
     const {title, desc} = req.body
 
@@ -58,59 +39,61 @@ router.post('/', (req, res) => {
     book.push(newBook);
 
     res.status(201)
-    res.json(newBook)
-});
-
-router.post('/upload-book', fileMiddleware.single('book'), (req, res) => {
-    if (req.file) {
-        const {path} = req.file
-        console.log(path)
-
-        res.json(path)
-    } else {
-        res.json(null)
-    }
+    res.redirect('/books')
 })
 
-router.put('/:id', (req, res) => {
-    const {book} = stor;
-    const {title, desc} = req.body;
-    const {id} = req.params;
+router.get('/:id', (req, res) => {
+    const {book} = stor
+    const {id} = req.params
+    const idx = book.findIndex(el => el.id === id);
+
+    res.render("books/view", {
+        title: "Книга | просмотр",
+        book: book[idx]
+    })
+});
+
+router.get('/update/:id', (req, res) => {
+    const {book} = stor
+    const {id} = req.params
+    const idx = book.findIndex(el => el.id === id);
+
+    res.render("books/update", {
+        title: "Книга | редактирование",
+        book: book[idx]
+    })
+});
+
+router.post('/update/:id', (req, res) => {
+    const {book} = stor
+    const {id} = req.params
+    const {title, desc} = req.body
     const idx = book.findIndex(el => el.id === id);
 
     if (idx !== -1) {
         book[idx] = {
             ...book[idx],
             title,
-            desc,
-        };
-        res.json(book[idx]);
+            desc
+        }
+        res.redirect(`/books/${id}`)
     } else {
-        res.status(404);
-        res.json("book | not found");
+        res.status(404).redirect('/404')
     }
 });
 
-router.delete('/:id', (req, res) => {
-    const {book} = stor;
-    const {id} = req.params;
+router.post('/delete/:id', (req, res) => {
+    const {book} = stor
+    const {id} = req.params
     const idx = book.findIndex(el => el.id === id);
 
     if (idx !== -1) {
-        book.splice(idx, 1);
-        res.json(true);
+        book.splice(idx, 1)
+        res.redirect(`/books`)
     } else {
-        res.status(404);
-        res.json("book | not found");
+        res.status(404).redirect('/404')
     }
-});
 
-router.get('/:id/download-book', (req, res) => {
-    res.download(__dirname+'/../public/bookfile/2021-08-31T14-23-37.743Z-testfile.pdf', 'book.pdf', err=>{
-        if (err){
-            res.status(404).json();
-        }
-    });
-});
+})
 
 module.exports = router
