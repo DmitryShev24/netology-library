@@ -1,0 +1,58 @@
+MacBook-Pro:netology-library user$ docker pull node:15.14
+15.14: Pulling from library/node
+Digest: sha256:608bba799613b1ebf754034ae008849ba51e88b23271412427b76d60ae0d0627
+Status: Image is up to date for node:15.14
+docker.io/library/node:15.14
+MacBook-Pro:netology-library user$ docker run --name first_node -i -t -d -v $(pwd)/data:/var/first/data node
+Unable to find image 'node:latest' locally
+latest: Pulling from library/node
+8f04e8168e38: Pull complete
+82e5f66f5d0e: Pull complete
+c1c8f1c77d66: Pull complete
+5095cab27771: Pull complete
+ea7fe362a971: Pull complete
+9000ed6ad541: Pull complete
+3f665b328b14: Pull complete
+a5d69baf58c5: Pull complete
+66f07dc23303: Pull complete
+Digest: sha256:94fc8b0a24f03336536ee099a1a70afe9cfe7e71462b65aae79c17426ea4a372
+Status: Downloaded newer image for node:latest
+3c49c545ab56063244d5557c4a0a828a2561f4c5b55da3f7edf1b08e1272a3be
+MacBook-Pro:netology-library user$ docker run --name second_node -i -t -d -v $(pwd)/data:/var/second/data node
+03b706d98287a7fba2932fc5642099c1f0d953abdb457d5ac7a9c2279effb345
+MacBook-Pro:netology-library user$ docker exec -i -t first_name /bin/sh
+Error: No such container: first_name
+MacBook-Pro:netology-library user$ docker exec -i -t first_node /bin/sh
+# cd var/first/data
+# ls
+# touch file.txt
+# ls
+file.txt
+# read escape sequence
+MacBook-Pro:netology-library user$ docker exec -i -t second_node /bin/sh
+# cd var/second/data
+# ls
+file-host.txt  file.txt
+# read escape sequence
+MacBook-Pro:netology-library user$ docker stop first_node
+first_node
+MacBook-Pro:netology-library user$ docker stop second_node
+docker rm first_nodesecond_node
+MacBook-Pro:netology-library user$ docker rm first_node
+first_node
+MacBook-Pro:netology-library user$ docker rm second_node
+second_node
+MacBook-Pro:netology-library user$ docker rmi node
+Untagged: node:latest
+Untagged: node@sha256:94fc8b0a24f03336536ee099a1a70afe9cfe7e71462b65aae79c17426ea4a372
+Deleted: sha256:ab773999a02271b25a9f3bce46018fc3ad46a7f922a5e3e8712b6d1c7087c415
+Deleted: sha256:f07c2b36f00fa25f97b9eccc71a0570527132a810aff09708b091bbc34272c91
+Deleted: sha256:1edca1b63c4597fd8c7da0884807e56b7f4cd43a43036e064b39155a91c7ccf9
+Deleted: sha256:88af413077f25cf6d359ca3b99203bd8bd4d1174be39d69ad8b5b227fa23b712
+Deleted: sha256:1ff4c312cb9a8133e55170726f77f590d54120777d63dc0a31d88d9e343b8930
+Deleted: sha256:5b0b898029a3134a26b335615a45b4714025e4cdf43b6ed0990b13e61638d060
+Deleted: sha256:4ec2fac4401c366baaae501d2ecc7e2d01c9784c67e208dff8ddfe451c9ba895
+Deleted: sha256:762cf8a3f5a310136bb21ff31705524c3914507d84ad7409c3c231e5946b2b4a
+Deleted: sha256:276817de08af407ebd4338f33f523c632132faa098822e2a2fdf689441e9a740
+Deleted: sha256:4dd0c5812fd41bd7ed9a37443595a5ae70ef52da044ae8a3ddbf1b58fe126c54
+MacBook-Pro:netology-library user$
