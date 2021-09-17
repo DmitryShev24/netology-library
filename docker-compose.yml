@@ -1,0 +1,9 @@
+services:
+  counter:
+    build: .
+  library:
+    build: .
+    ports:
+      - 80:3001
+    links:
+      - counter

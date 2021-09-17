@@ -1,0 +1,1 @@
+адрес образа на docker hub — https://hub.docker.com/layers/167835022/dmitryshevchenko/library/latest/images/sha256-85aae7abfc74b7e5a1d8b4eb133bd40cfddb6360881ac5941bed8f071a91cf84?context=repo
