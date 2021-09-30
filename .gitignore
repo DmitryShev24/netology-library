@@ -4,6 +4,8 @@ config.js
 .idea
 /.idea
 
+.atlas.env
+/.atlas.env
 
 /yarn-error.log
 
