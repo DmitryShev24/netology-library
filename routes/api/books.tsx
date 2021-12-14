@@ -7,8 +7,8 @@ const Book = require("../../models/book")
 
 const passport = require("passport")
 const LocalStrategy = require("passport-local").Strategy
-db = require("../passport/db")
-
+const db = require("../passport/db")
+const app = express()
 // GET /api/user/login   страница с формой входа / регистрации
 // GET /api/user/me      страница профиля
 // POST /api/user/login
@@ -192,3 +192,10 @@ app.use(passport.session())
 
 
 module.exports = router
+
+
+
+
+
+
+
