@@ -5,6 +5,97 @@ const fileMiddleware = require('../../middleware/file')
 const Book = require("../../models/book")
 
 
+const passport = require("passport")
+const LocalStrategy = require("passport-local").Strategy
+db = require("../passport/db")
+
+// GET /api/user/login   страница с формой входа / регистрации
+// GET /api/user/me      страница профиля
+// POST /api/user/login
+// POST /api/user/signup
+
+
+/**
+ * @param {String} username
+ * @param {String} password
+ * @param {Function} done
+ */
+function verify (username, password, done) {
+    db.users.findByUsername(username, function (err, user) {
+        if (err) { return done(err) }
+        if (!user) { return done(null, false) }
+
+        if (!db.users.verifyPassword(user, password)) { return done(null, false) }
+
+        // `user` будет сохранен в `req.user`
+        return done(null, user)
+    })
+}
+
+const options = {
+    usernameField: 'username',
+    passwordField: 'password',
+    passReqToCallback: false,
+}
+
+
+//  Добавление стратегии для использования
+passport.use('local', new LocalStrategy(options, verify))
+
+// Конфигурирование Passport для сохранения пользователя в сессии
+passport.serializeUser(function (user, cb) {
+    cb(null, user.id)
+})
+
+passport.deserializeUser(function (id, cb) {
+    db.users.findById(id, function (err, user) {
+        if (err) { return cb(err) }
+        cb(null, user)
+    })
+})
+
+
+router.get("/user/login", (req, res) => {
+    res.render('home', {user: req.user})
+})
+
+router.get("/user/me", (req, res, next) => {
+    if (!req.isAuthenticated || !req.isAuthenticated()) {
+        if (req.session) {
+            req.session.returnTo = req.originalUrl || req.url
+        }
+        return res.redirect('/login')
+    }
+    next()
+})
+// app.get('/profile',
+//     function (req, res, next) {
+//
+//     },
+//     function (req, res) {
+//         res.render('profile', { user: req.user })
+//     })
+
+router.post("/user/login", (req, res) => {
+    passport.authenticate(
+        'local',
+        {
+            failureRedirect: '/user/login',
+        },
+    )
+
+            console.log("req.user: ", req.user)
+            res.redirect('/')
+        //})
+})
+
+
+router.post("/user/signup")
+
+
+
+
+
 router.get("/", async (req, res) => {
     const book = await Book.find().select('-__v');
     res.json(book);
@@ -95,5 +186,9 @@ router.delete('/:id', async (req, res) => {
 //         }
 //     });
 // });
+
+app.use(passport.initialize())
+app.use(passport.session())
+
 
 module.exports = router
