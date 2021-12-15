@@ -1,7 +1,9 @@
+import {BooksRepository} from "../../interface/IBook"
+
 const express = require("express")
 const router = express.Router()
 const fileMiddleware = require('../../middleware/file')
-
+const myContainer = require('../../container')
 const Book = require("../../models/book")
 
 
@@ -13,6 +15,8 @@ const app = express()
 // GET /api/user/me      страница профиля
 // POST /api/user/login
 // POST /api/user/signup
+
+const repo = myContainer.get(BooksRepository)
 
 
 /**
@@ -97,15 +101,18 @@ router.post("/user/signup")
 
 
 router.get("/", async (req, res) => {
-    const book = await Book.find().select('-__v');
-    res.json(book);
+
+    const books = await repo.getBooks()
+        //Book.find().select('-__v');
+    res.json(books);
 });
 
 
 router.get('/:id', async (req, res) => {
     const {id} = req.params;
     try {
-        const book = await Book.findById(id).select('-__v');
+        const book = await repo.getBook(id);
+            //Book.findById(id).select('-__v');
         res.json(book);
     } catch (e) {
         console.error(e);
@@ -133,7 +140,9 @@ router.post('/', async (req, res) => {
     });
 
     try {
-        await newBook.save();
+        await repo.createBook(newBook)
+
+            //newBook.save();
         res.status(201)
         res.json(newBook);
     } catch (e) {
@@ -158,7 +167,8 @@ router.put('/:id', async (req, res) => {
     const {id} = req.params;
 
     try {
-        await Book.findByIdAndUpdate(id, {title, desc});
+        await repo.updateBook(id, title, desc)
+            //Book.findByIdAndUpdate(id, {title, desc});
         res.redirect(`/api/books/${id}`);
     } catch (e) {
         console.error(e);
@@ -170,7 +180,9 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     const {id} = req.params;
     try {
-        await Book.deleteOne({_id: id});
+        await repo.deleteBook(id)
+
+            //Book.deleteOne({_id: id});
         res.json(true);
     } catch (e) {
         console.error(e);

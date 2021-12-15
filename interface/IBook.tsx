@@ -8,7 +8,7 @@ interface IBook {
     fileName: string
 }
 
-class BooksRepository {
+export class BooksRepository {
     books: Array<IBook>
 
     constructor() {
@@ -24,10 +24,10 @@ class BooksRepository {
     getBooks(){
         return this.books
     }
-    updateBook(id: number, title: string){
+    updateBook(id: number, title: string, desc: string){
         return this.books.map(obj => {
             if (obj.id === id) {
-                return {...obj, title};
+                return {...obj, title, desc};
             }
             return obj;
         });
